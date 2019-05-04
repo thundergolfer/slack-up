@@ -33,16 +33,34 @@ fn main() {
 
     let gh_client = Github::new(github_access_token).unwrap();
     let me = gh_client.get()
-        .user()
+        .repos()
+        .owner("Canva")
+        .repo("data-science")
+        .pulls()
         .execute::<Value>();
     match me {
         Ok((headers, status, json)) => {
             println!("{:#?}", headers);
             println!("{}", status);
             if let Some(json) = json{
-                println!("{}", json);
+//                println!("{}", json);
+                filter_for_relevant_prs(json.as_array())
+
             }
         },
         Err(e) => println!("{}", e)
     }
+}
+
+fn filter_for_relevant_prs(pulls: Option<&Vec<Value>>) {
+    match pulls {
+        Some(pulls) => {
+            println!("worked");
+            for p in pulls {
+                println!("{}", p["body"])
+            }
+        }
+        None => println!("failed")
+    }
+
 }
